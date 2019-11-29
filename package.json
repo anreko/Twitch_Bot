@@ -1,0 +1,15 @@
+{
+  "name": "twitch_bot",
+  "version": "1.0.0",
+  "description": "Amazing Twitch Bot",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Sam and Anna",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "tmi.js": "^1.5.0"
+  }
+}
