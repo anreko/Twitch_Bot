@@ -2,12 +2,28 @@ const express = require('express');
 const tmi = require("tmi.js");
 const app = express();
 const port = 3000;
+const db = require("./database.js")
 
 // Glitch expects a web server so we're starting express to take care of that.
 // The page shows the same information as the readme and includes the remix button.
 app.get("/", function (request, response) {
   response.send("It's working!?");
 });
+
+app.get("/database", function (request, response) {
+  const getUsers = 'SELECT * FROM users';
+
+  db.query(getUsers, null, (err, results) => {
+      if (err) {
+          console.log('Error getting users from database');
+      }
+      console.log(results);
+  })   
+
+})
+
+
+
 
 // Setting options for our bot, disable debug output once your up and running.
 let options = {
