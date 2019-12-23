@@ -3,6 +3,7 @@ const tmi = require("tmi.js");
 const app = express();
 const port = 3000;
 const test = require("./database.js")
+const fetch = require('node-fetch');
 // import { test } from "./dbtest.js";
 
 // Glitch expects a web server so we're starting express to take care of that.
@@ -12,14 +13,14 @@ app.get("/", function (request, response) {
 });
 
 app.get("/database", function (request, response) {
-  const getUsers = 'SELECT * FROM "Users"';
-
+  
   // db.query(getUsers, null, (err, results) => {
-  //     if (err) {
-  //         console.log('Error getting users from database');
-  //     }
-  //     console.log(results);
-  // })  
+    //     if (err) {
+      //         console.log('Error getting users from database');
+      //     }
+      //     console.log(results);
+      // })  
+  const getUsers = 'SELECT * FROM "Users"';
   test.query(getUsers, null, (err, results) => {
     if (err) {
         console.log('Error getting users from database');
@@ -53,11 +54,40 @@ client.on('connected', (address, port) => {
   console.log(`Connected to ${address}:${port}`);
 })
 
+function getUsers() {
+  fetch("https://swapi.co/api/people/1/")
+  .then(response => response.text())
+  .then(result => {
+    console.log(result);
+    client.action('konstantinnovation', `Found ${result}`);
+  })
+  .catch(error => console.log('error', error));
+}
+
+function checkDB() {
+  const getUsers = 'SELECT * FROM "Users"';
+  test.query(getUsers, null, (err, results) => {
+    if (err) {
+        console.log('Error getting users from database');
+        return response.status(500).send('Error getting user');
+    }
+    console.log(results);
+    client.action('konstantinnovation', results.rows);
+  });
+}
+
+
 // Bot is listening for messages
 client.on('message', (channel, user, message, self) => {
   switch(message) {
     case '!test': 
       client.action('konstantinnovation', `Replying to ${user['display-name']}`);
+      break;
+    case '!users':
+      getUsers();
+      break;
+    case '!dbTest':
+      checkDB();
       break;
     default:
       break;
