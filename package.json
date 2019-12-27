@@ -4,7 +4,7 @@
   "description": "Amazing Twitch Bot",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node bot.js"
   },
   "author": "Sam and Anna",
   "license": "ISC",

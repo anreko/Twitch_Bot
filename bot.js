@@ -4,35 +4,68 @@ const db = require("./database.js")
 const fetch = require('node-fetch');
 const passwordHash = require('password-hash');
 
-
-function getUsers() {
-  fetch("https://swapi.co/api/people/1/")
-  .then(response => response.text())
-  .then(result => {
-    console.log(result);
-    client.action('konstantinnovation', `Found ${result}`);
-  })
-  .catch(error => console.log('error', error));
+function hash(s){
+  return passwordHash.generate(s);
 }
 
 
-function checkDB() {
-  var queryString = 'SELECT * FROM users';
-  let page = ""
-  db.query(queryString,(err, results, fields) =>
-    {
-      if (err){
-        return response.status(500).send('Error getting users');
-      }else{
-        Object.keys(results).forEach(function(key) {
-          var row = results[key];
-          page += row.name + ",";
-        });
+//!check
+function check(user,s){
+  getPassword(user,function(err,foo){
+    if(err){
+      console.log("error checking pass",err);
+    }else{
+      console.log("password authentication:",passwordHash.verify(s,foo));
+   }
+   });
+}
+
+//!showme
+function showStats(user){
+  getUserData(user,function(err,foo){
+    if(err){
+      console.log("error getting user",err);
+      return null;
+    }else{
+      console.log("userdata:",foo);
+      s = "Stats ---";
+      for (const property in foo) {
+        if(property!='password'){
+          s+= property+" :\t"+ foo[property]+" --- ";
+        }
       }
-      client.action('konstantinnovation', `Found ${page}`);
-    });
+      client.action('konstantinnovation',s);
+      return foo;
+   }
+   });
 }
 
+
+function getUserData(user,callback){
+  var queryString = `SELECT * from twitchdb.users WHERE name = '${user}';`
+  db.query(queryString,(err, results, fields) =>
+      {
+        if (err){
+          console.log("err in getpass:",err);
+          callback(err,null);
+        }else{
+          console.log("returning:",results[0]);
+          callback(err,results[0]);
+      }});
+}
+
+function getPassword(user,callback){
+  var queryString = `SELECT password from twitchdb.users WHERE name = '${user}';`
+  db.query(queryString,(err, results, fields) =>
+      {
+        if (err){
+          console.log("err in getpass:",err);
+          callback(err,null);
+        }else{
+          console.log("returning:",results[0].password);
+          callback(err,results[0].password);
+      }});
+}
 
 
 
@@ -54,59 +87,100 @@ client.on('connected', (address, port) => {
   console.log(`Connected to ${address}:${port}`);
 });
 
+
+
+
+
+
+
+function setPassword(user,pass){
+  var queryString = `UPDATE twitchdb.users SET password = "${pass}" WHERE name = "${user}";`
+  db.query(queryString,(err, results, fields) =>
+      {
+        if (err){
+          console.log("error setting password")
+          console.log(err);
+        }else{
+          client.action('konstantinnovation', `Successfully updated ${user}'s password.`);
+      }});
+}
+
+
+function changePass(user,pass){
+  let hashedPassword = hash(pass);
+  getPassword(user,function(err,foo){
+    if(err){
+      console.log("error checking pass",err);
+    }else{
+      console.log('changing pass',foo,'to',hashedPassword)
+    }
+  });
+  setPassword(user,hashedPassword);
+}
+
+
+
+function addUser(username){
+  var queryString = 'INSERT INTO `twitchdb`.`users` (`name`) VALUES ("'+username+'");';
+  db.query(queryString,(err, results, fields) =>
+      {
+        if (err){
+          client.action('konstantinnovation', `Error. You have already registered ${username}. You don't need to do it again!`);
+        }else{
+          client.action('konstantinnovation', `Successfully registered ${username}. using !unregister will completely delete your account and all progress made so far.`);
+      }});
+}
+
 client.on("whisper", (from, userstate, message, self) => {
     // Don't listen to my own messages..
     if (self) return;
+    //console.log("from:",from);
+    //console.log("message:",message);
 
     let tokens = message.split(" ");
-    console.log("from:",from);
-    //console.log("XX:",userstate);
-    console.log("message:",message);
-    //console.log("XX:",tokens,tokens.length);
     // Do your stuff.
 
-
     switch(tokens[0]) {
+      case '!check':
+        if(tokens.length > 1){
+          check(userstate.username,tokens[1]);
+        }
 
+       break;
+      //set a password
       case '!password':
         if(tokens.length > 1){
-
-          console.log("set password to",tokens[1]);
+          changePass(userstate.username,tokens[1]);
         }else{
-          console.log("no string provided");
-          client.whisper("username", "Your message");
+            console.log("no string provided");
         }
         break;
-        case '!register':
-          if(tokens.length > 1){
-
-          }else{
-
-          }
-          break;
     }
 });
 
 // Bot is listening for messages
 client.on('message', (channel, user, message, self) => {
-  //if(self)return;
-  console.log("from:",user);
-  console.log("message:",message);
-  switch(message) {
+  //ignore self
+  if(self)return;
+
+  let tokens = message.split(" ");
+  //console.log("message:",message);
+  //console.log("from:",user);
+  //console.log("message:",message);
+  switch(tokens[0]) {
+
     case '!test':
       client.action('konstantinnovation', `Replying to ${user['display-name']}`);
-      client.whisper(user.username, "test!").then(function(data) {
-          console.log('data', data);
-        }).catch(function(err) {
-          console.log('something went wrong', err);
-        });
       break;
-    case '!users':
-      getUsers();
+
+    case '!showme':
+      showStats(user.username);
       break;
-    case '!dbTest':
-      checkDB();
-      break;
+
+    case '!register':
+      //add yourself to database
+      addUser(user.username)
+
     default:
       break;
   }
