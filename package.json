@@ -4,7 +4,10 @@
   "description": "Amazing Twitch Bot",
   "main": "index.js",
   "scripts": {
-    "start": "node bot.js"
+    "start": "node bot.js",
+    "site": "NODE_ENV=production node site/webserver.js",
+    "build": "NODE_ENV=production webpack",
+    "dev": "NODE_ENV=development webpack-dev-server --hot --host 0.0.0.0 & node site/webserver.js"
   },
   "author": "Sam and Anna",
   "license": "ISC",
@@ -13,7 +16,20 @@
     "express": "^4.17.1",
     "mysql": "^2.17.1",
     "node-fetch": "^2.6.0",
+    "path": "^0.12.7",
     "pg": "^7.14.0",
-    "tmi.js": "^1.5.0"
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "tmi.js": "^1.5.0",
+    "webpack": "^4.41.5"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.7.7",
+    "@babel/preset-env": "^7.7.7",
+    "@babel/preset-react": "^7.7.4",
+    "babel-loader": "^8.0.6",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.10.1"
   }
 }

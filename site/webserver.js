@@ -1,4 +1,4 @@
-const db = require("./database.js")
+const db = require("../database.js")
 const express = require('express');
 const app = express();
 const port = 3000;
@@ -6,7 +6,11 @@ const fetch = require('node-fetch');
 
 
 app.get("/", function (request, response) {
-  response.send("It's working!?");
+  response.sendFile(__dirname + '/index.html');
+});
+
+app.get("/build/bundle.js", function (request, response) {
+  response.sendFile(__dirname + '/build/bundle.js');
 });
 
 app.get("/database", function (request, response) {
