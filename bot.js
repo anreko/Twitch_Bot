@@ -68,31 +68,6 @@ function getPassword(user,callback){
 }
 
 
-
-// Setting options for our bot, disable debug output once your up and running.
-let options = {
-  identity: {
-    username: "Innovation_Bot",
-    password: "oauth:dzu6s1878y88781cobhdohi7yse2ld"
-  },
-    channels: ["konstantinnovation"]
-};
-
-// Set up our new TMI client and connect to the server.
-let client =  new tmi.client(options);
-client.connect();
-// We have debug enabled now but if not we want some sort of confirmation
-// we've connected to the server.
-client.on('connected', (address, port) => {
-  console.log(`Connected to ${address}:${port}`);
-});
-
-
-
-
-
-
-
 function setPassword(user,pass){
   var queryString = `UPDATE twitchdb.users SET password = "${pass}" WHERE name = "${user}";`
   db.query(queryString,(err, results, fields) =>
@@ -131,6 +106,29 @@ function addUser(username){
       }});
 }
 
+
+
+
+// Setting options for our bot, disable debug output once your up and running.
+let options = {
+  identity: {
+    username: "Innovation_Bot",
+    password: "oauth:dzu6s1878y88781cobhdohi7yse2ld"
+  },
+    channels: ["konstantinnovation"]
+};
+
+// Set up our new TMI client and connect to the server.
+let client =  new tmi.client(options);
+client.connect();
+// We have debug enabled now but if not we want some sort of confirmation
+// we've connected to the server.
+client.on('connected', (address, port) => {
+  console.log(`Connected to ${address}:${port}`);
+});
+
+
+//MUST be whispered
 client.on("whisper", (from, userstate, message, self) => {
     // Don't listen to my own messages..
     if (self) return;
@@ -158,7 +156,8 @@ client.on("whisper", (from, userstate, message, self) => {
     }
 });
 
-// Bot is listening for messages
+
+// Bot is listening for messages private or otherwise
 client.on('message', (channel, user, message, self) => {
   //ignore self
   if(self)return;
