@@ -9,7 +9,7 @@ var pool  = mysql.createPool({
 
 module.exports = {
   query: (text, callback) => {
-    console.log('executing query', text);
+    //console.log('executing query', text);
     return pool.query(text, callback);
   },
 };
