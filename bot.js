@@ -3,6 +3,8 @@ const tmi = require("tmi.js");
 const db = require("./database.js")
 const fetch = require('node-fetch');
 const passwordHash = require('password-hash');
+//delay for updating science
+const delay = 3000;
 
 function hash(s){
   return passwordHash.generate(s);
@@ -184,3 +186,31 @@ client.on('message', (channel, user, message, self) => {
       break;
   }
 })
+
+
+
+
+function addScience(username){
+  var queryString = "UPDATE twitchdb.users SET science = science + 1, totalscience = totalscience + 1  WHERE name = '"+user+"';"
+  db.query(queryString,(err, results, fields) =>
+      {
+        if (err){
+          console.log("error when adding science for ",username)
+        }else{
+          console.log("Success! Added science for ",username)
+      }});
+}
+
+
+setInterval(function(){
+  let channel = "sumiklabs"
+  fetch("https://tmi.twitch.tv/group/user/"+channel+"/chatters")
+  .then(res => res.json() )
+  .then(res => {
+    let list = res.chatters.broadcaster.concat(res.chatters.moderators,res.chatters.vips,res.chatters.viewers);
+    for(user of list){
+      if( !['nightbot','streamlabs','0x626f74', 'alfredjudokus100289'].includes(user) ){
+        addScience(user);
+      }
+    }})
+},delay);
