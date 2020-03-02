@@ -9,11 +9,11 @@ module.exports = {
       },
     mode: process.env.NODE_ENV,
     devServer: {
+        port: 9000,
+        host: '0.0.0.0',
         publicPath: '/site/build/',
         //If proxy is needed 
-        // proxy: {'/': 'http://localhost:3000',
-                // '/assets/': 'http://localhost:3000'
-            // }
+        proxy: {'/': 'http://localhost:3000'}
     },
     module: {
         rules: [

@@ -23,8 +23,9 @@ app.get("/database", function (request, response) {
       }else{
         Object.keys(results).forEach(function(key) {
           var row = results[key];
-          page += row.name + row.email+"<br>";
+          page += row.name + row.totalscience+"<br>";
         });
+        console.log(results);
       }
       return response.status(200).send(page);
     });
