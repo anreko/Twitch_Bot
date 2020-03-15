@@ -10,6 +10,7 @@ app.get("/", function (request, response) {
 });
 
 app.get("/build/bundle.js", function (request, response) {
+  console.log('Looking in ' + __dirname + '/build/bundle.js')
   response.sendFile(__dirname + '/build/bundle.js');
 });
 
