@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import LeaderBoard from './Leaderboard.jsx';
 
 function App() {
   const [pageDisplay, setDisplay] = useState(<p>LOADING</p>);
@@ -7,7 +8,7 @@ function App() {
     console.log('Effect triggered')
     setTimeout(() => {
       console.log('Timeout triggered')
-      setDisplay(<p>Not working</p>)
+      setDisplay(<LeaderBoard />)
     }, 3000)
   },[])
 

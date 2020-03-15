@@ -14,21 +14,22 @@ app.get("/build/bundle.js", function (request, response) {
   response.sendFile(__dirname + '/build/bundle.js');
 });
 
-app.get("/database", function (request, response) {
-  page = ""
-  var queryString = 'SELECT * FROM users';
+app.get("/leaderboard", function (request, response) {
+  page = {}
+  var queryString = 'SELECT name, totalscience FROM users';
   db.query(queryString,(err, results, fields) =>
     {
-      if (err){
+      if (err) {
         return response.status(500).send('Error getting users');
-      }else{
+      }else {
         Object.keys(results).forEach(function(key) {
-          var row = results[key];
-          page += row.name + row.totalscience+"<br>";
+          let row = results[key];
+          console.log('row', row.name)
+          page[row.name] = row.totalscience;
         });
-        console.log(results);
+        console.log(page);
       }
-      return response.status(200).send(page);
+      return response.status(200).json(page);
     });
 });
 

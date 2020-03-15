@@ -7,7 +7,7 @@
     "start": "node bot.js",
     "site": "NODE_ENV=production node site/webserver.js",
     "build": "NODE_ENV=production webpack",
-    "dev": "NODE_ENV=development webpack-dev-server --open & nodemon site/webserver.js"
+    "dev": "NODE_ENV=development webpack-dev-server & nodemon site/webserver.js"
   },
   "author": "Sam and Anna",
   "license": "ISC",
